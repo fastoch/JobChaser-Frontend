@@ -9,7 +9,7 @@ origin  https://git.alt-tools.tech/nordine-fabrice-bcs/JobChaser-Frontend.git (p
 ```
 
 Pour pousser quotidiennement vers le repo Alt, utiliser le `source control` de VSCodium.    
-Pour sauvegarder ponctuellement sur mon GitHub perso: `git push backup master`  
+Pour sauvegarder ponctuellement sur mon GitHub perso: `git push backup <branch_name>`  
 
 - créer une branche "develop" sur le dépôt GitLab, ce sera notre branche principale durant le développement
 - Après avoir cloné le projet depuis GitLab, se positionner sur la branche "develop": `git checkout develop`  
