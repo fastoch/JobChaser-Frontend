@@ -1,7 +1,8 @@
 # Suivi du contrôle de version
 
-- Nordine: a créé sa branche JC-46 et l'a poussé sur GitLab (en est à la procédure 2)
-- Fabrice: n'a rien fait
+On en est tous à la Procédure 2 dans les instructions fournies par Amine:
+- Nordine: a créé sa branche JC-46 et l'a poussé sur GitLab 
+- Fabrice: a créé sa branche JC-64 et l'a poussé sur GitLab
 - Guillaume: n'a rien fait
 
 # Modification de nos fichiers de conception
