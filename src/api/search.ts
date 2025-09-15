@@ -1,3 +1,9 @@
+/**
+ * This is a "resource route". 
+ * It doesn't render any UI; it just returns data. 
+ * The useFetcher in SearchBar will call this route's loader.
+ */
+
 interface SearchResult {
   id: string;
   title: string;

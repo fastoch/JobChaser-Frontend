@@ -1,32 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { apiSearchLoader } from './api/search';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthenticatedLayout } from './components/AuthenticatedLayout';
+import { SearchResults, searchLoader } from './pages/SearchResults';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Placeholder pages
+  const LoginPage = () => <h2>Login Page</h2>;
+  const HomePage = () => <h2>Home Page</h2>;
+  const ItemPage = () => <h2>Item Page</h2>;
+
+  /**
+   * Our router setup defines which pages use the AuthenticatedLayout (and thus show the SearchBar)
+   */
+  const router = createBrowserRouter([
+    {
+      path: '/login',
+      element: <LoginPage />,
+    },
+    {
+      element: <AuthenticatedLayout />,
+      // We could add a loader here to protect all child routes
+      // loader: checkAuthLoader,
+      children: [
+        {
+          path: '/',
+          element: <HomePage />,
+        },
+        {
+          path: '/search',
+          element: <SearchResults />,
+          loader: searchLoader,
+        },
+        {
+          path: '/items/:id',
+          element: <ItemPage />,
+        },
+        // ... other authenticated routes
+      ],
+    },
+    // Resource route for search suggestions
+    {
+      path: '/api/search',
+      loader: apiSearchLoader,
+    },
+  ]);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <RouterProvider router={router} />
     </>
   )
 }

@@ -5,27 +5,19 @@
  */
 
 // src/components/SearchBar.tsx
-import React from 'react';
-import { Form, useFetcher, Link } from 'react-router-dom';
-
-interface SearchResult {
-  id: string;
-  title: string;
-  path: string;
-}
+import { useEffect, useRef } from 'react';
+import { Form, Link } from 'react-router-dom';
+import { useSearchStore } from '../stores/useSearchStore';
+import { useSearchSuggestions } from '../api/useSearchSuggestions';
 
 export function SearchBar() {
-  // this hook is for fetching the search suggestions without causing a navigation
-  const fetcher = useFetcher<SearchResult[]>();
+  const { query, showResults, setQuery, setShowResults, reset } = useSearchStore();
+  const { data: suggestions, isLoading, isSuccess } = useSearchSuggestions(query);
 
-  // maange the visibility of the suggestions dropdown
-  const [showResults, setShowResults] = React.useState(false);
-
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Effect to close dropdown on outside click
-  React.useEffect(() => {
+  useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (formRef.current && !formRef.current.contains(event.target as Node)) {
         setShowResults(false);
@@ -33,35 +25,32 @@ export function SearchBar() {
     };
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
+  }, [setShowResults]);
+
+  const handleReset = () => {
+    reset();
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+  };
 
   return (
     <div style={{ position: 'relative' }}>
       {/* when the user hits Enter, it navigates to /search */}
-      <Form
-        ref={formRef}
-        action="/search" 
-        role="search"
-        onSubmit={() => setShowResults(false)}
-      >
+      <Form ref={formRef} action="/search" role="search" onSubmit={handleReset}>
         <input
-          ref={inputRef}
           type="search"
           name="q"
           placeholder="Search..."
           aria-label="Search"
-          onFocus={() => inputRef.current?.value && setShowResults(true)}
-          // call fetcher.submit to a special API route to get suggestions as the user types
+          value={query}
+          onFocus={() => query && setShowResults(true)}
           onChange={(event) => {
-            const query = event.currentTarget.value;
-            if (query.length > 0) {
-              fetcher.submit({ q: query }, { method: 'get', action: '/api/search' });
+            const newQuery = event.currentTarget.value;
+            setQuery(newQuery);
+            if (newQuery.length > 0) {
               setShowResults(true);
             } else {
-              // Clear suggestions
-              if (fetcher.data) {
-                fetcher.submit(null, { method: 'get', action: '/api/search' });
-              }
               setShowResults(false);
             }
           }}
@@ -82,20 +71,15 @@ export function SearchBar() {
           maxHeight: '300px',
           overflowY: 'auto'
         }}>
-          {fetcher.state === 'loading' && <div style={{ padding: '0.5rem' }}>Searching...</div>}
+          {isLoading && <div style={{ padding: '0.5rem' }}>Searching...</div>}
           
-          {fetcher.data && fetcher.data.length > 0 && (
+          {isSuccess && suggestions && suggestions.length > 0 && (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {fetcher.data.map((result) => (
+              {suggestions.map((result) => (
                 <li key={result.id} style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>
                   <Link 
                     to={result.path} 
-                    onClick={() => {
-                      setShowResults(false);
-                      if (formRef.current) {
-                        formRef.current.reset();
-                      }
-                    }}
+                    onClick={handleReset}
                     style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
                   >
                     {result.title}
@@ -105,7 +89,7 @@ export function SearchBar() {
             </ul>
           )}
 
-          {fetcher.data && fetcher.data.length === 0 && fetcher.state === 'idle' && (
+          {isSuccess && suggestions && suggestions.length === 0 && (
              <div style={{ padding: '0.5rem' }}>No results found.</div>
           )}
         </div>
