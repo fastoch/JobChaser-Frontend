@@ -26,5 +26,10 @@ Pour le travail en équipe, nous avons décidé de:
 - ne pas nommer les interfaces avec un préfixe "I" ou un suffixe "Interface"
 - 
 
+# Implémentation du composant SearchBar
+
+Our router setup in main.tsx defines which pages use the AuthenticatedLayout, and thus show the SearchBar.  
+
+
 # Exemples de requêtes SQL
 
