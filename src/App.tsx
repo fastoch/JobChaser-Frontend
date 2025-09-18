@@ -2,20 +2,17 @@ import { apiSearchLoader } from './api/search';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthenticatedLayout } from './components/AuthenticatedLayout';
 import { SearchResults, searchLoader } from './pages/SearchResults';
+import Signin from './pages/Signin';
+import Home from './pages/Home';
 
 function App() {
-  // Placeholder pages
-  const LoginPage = () => <h2>Login Page</h2>;
-  const HomePage = () => <h2>Home Page</h2>;
-  const ItemPage = () => <h2>Item Page</h2>;
-
   /**
    * Our router setup defines which pages use the AuthenticatedLayout (and thus show the SearchBar)
    */
   const router = createBrowserRouter([
     {
       path: '/login',
-      element: <LoginPage />,
+      element: <Signin />,
     },
     {
       element: <AuthenticatedLayout />,
@@ -24,16 +21,12 @@ function App() {
       children: [
         {
           path: '/',
-          element: <HomePage />,
+          element: <Home />,
         },
         {
           path: '/search',
           element: <SearchResults />,
           loader: searchLoader,
-        },
-        {
-          path: '/items/:id',
-          element: <ItemPage />,
         },
         // ... other authenticated routes
       ],
